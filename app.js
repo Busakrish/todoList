@@ -7,6 +7,8 @@ const inputTag = document.getElementById("todoInput")
 // <ul> element where todos will be displayed
 const todoListUi = document.getElementById("todoList")
 
+const remaning = document.getElementById("remaning-todos")
+
 // Variable to store todo text 
 let todoText;
 
@@ -36,6 +38,11 @@ const populeteTodos = () => {
 
 // Add click event on "Add Todo" button
 addTodoBtn.addEventListener("click", () => {
+    if (inputTag.value.trim().length < 3) {
+        alert("You can't do this🤯!");
+        inputTag.value = ""
+        return;
+    }
     // Create a new todo object
     let todo = {
         id: Date.now(),        // Assign unique ID (based on array length)
@@ -78,6 +85,10 @@ checkboxs.forEach((element) => {
 
                 } else { return todo }
             })
+
+            // Show remaining todo count
+            remaning.innerHTML = todos.filter((item) => { return item.isCompleted != true }).length
+
             // Save updated todos to LocalStorage
             localStorage.setItem("todos", JSON.stringify(todos))
         }
@@ -94,7 +105,11 @@ checkboxs.forEach((element) => {
                     return { ...todo, isCompleted: false }
 
                 } else { return todo }
-            });
+            })
+
+            // Show remaining todo count
+            remaning.innerHTML = todos.filter((item) => { return item.isCompleted != true }).length
+
             // Save updated todos to LocalStorage
             localStorage.setItem("todos", JSON.stringify(todos))
         }
@@ -111,14 +126,17 @@ function setupDeleteButtons() {
 
         element.addEventListener('click', (e) => {
             // Remove the matching todo from the array
-            let targetelement = e.target.parentNode;
-            todos = todos.filter(todo => {
-                return "todo-" + todo.id != targetelement.id;
-            });
-            // Save updated todos to LocalStorage
-            localStorage.setItem("todos", JSON.stringify(todos))
-            populeteTodos();
-            setupDeleteButtons();
+            const conformation = confirm("Do you want to delete this todo🗑️?")
+            if (conformation) {
+                let targetelement = e.target.parentNode;
+                todos = todos.filter(todo => {
+                    return "todo-" + todo.id != targetelement.id;
+                });
+                // Save updated todos to LocalStorage
+                localStorage.setItem("todos", JSON.stringify(todos))
+                populeteTodos();
+                setupDeleteButtons();
+            }
         })
     });
 }
