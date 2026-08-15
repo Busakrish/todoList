@@ -8,6 +8,7 @@ const inputTag = document.getElementById("todoInput")
 const todoListUi = document.getElementById("todoList")
 
 const remaning = document.getElementById("remaning-todos")
+const clearCompleted = document.getElementById("clearCompletedBtn")
 
 // Variable to store todo text 
 let todoText;
@@ -19,6 +20,8 @@ let todos = [];
 let todosString = localStorage.getItem("todos")
 if (todosString) {
     todos = JSON.parse(todosString)
+    // Show remaining todo count
+    remaning.innerHTML = todos.filter((item) => { return item.isCompleted != true }).length
 }
 
 // Function to display all todos on the webpage
@@ -50,6 +53,8 @@ addTodoBtn.addEventListener("click", () => {
         isCompleted: false        // New todo is incomplete by default
     }
     todos.push(todo)
+    // Show remaining todo count
+    remaning.innerHTML = todos.filter((item) => { return item.isCompleted != true }).length
     localStorage.setItem("todos", JSON.stringify(todos))
     inputTag.value = "" // Clear input field
     // Refresh the UI
@@ -116,7 +121,19 @@ checkboxs.forEach((element) => {
     })
 });
 
+clearCompleted.addEventListener('click', () => {
+    // Remove the matching todo from the array
+    const conformation = confirm("Do you want to delete all finished todo🗑️?")
+    if (conformation) {
+        todos = todos.filter((todo) => { return todo.isCompleted == false })
+        // Show remaining todo count
+        remaning.innerHTML = todos.filter((item) => { return item.isCompleted != true }).length
 
+        // Save updated todos to LocalStorage
+        localStorage.setItem("todos", JSON.stringify(todos))
+        populeteTodos()
+    }
+})
 function setupDeleteButtons() {
     // Select all checkboxes currently present in the page
     const deleteBtns = document.querySelectorAll(".delete-btn")
@@ -136,6 +153,8 @@ function setupDeleteButtons() {
                 localStorage.setItem("todos", JSON.stringify(todos))
                 populeteTodos();
                 setupDeleteButtons();
+                // Show remaining todo count
+                remaning.innerHTML = todos.filter((item) => { return item.isCompleted != true }).length
             }
         })
     });
